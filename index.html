@@ -1,0 +1,257 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <title>Smart Skateboard</title>
+
+    <!-- Load plotly.js into the DOM -->
+    <script src='https://cdn.plot.ly/plotly-latest.min.js'></script>
+    <!-- Angular -->
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular.min.js"></script>
+    <!-- Font awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A==" crossorigin=""/>
+    <!-- Make sure you put this AFTER Leaflet's CSS -->
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js" integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA==" crossorigin=""></script>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <style>
+      /* Style goes here */
+    </style>
+</head>
+<body ng-app="myApp" ng-controller="myCtrl">
+    <div class="container-fluid">
+
+        <h1>The Smart Skateboard!</h1>
+
+        <p><i>deviceorientation</i> provides <i>alpha</i>, <i>beta</i> and <i>gamma</i> components which correspond to orientation along the Z, X and Y axes, respectively.</p><p><i>devicemotion</i> provides acceleration and rotation rate along three axes using MEMS accelerometers and gyroscopes.</p>
+
+        <div class="p-3 mb-2 bg-secondary" id="demo-div">
+        <a id="start_demo" class="btn btn-lg btn-success py-1" href="#" role="button">Start the demo</a>
+        <p style="margin-top:1rem;">Num. of datapoints: <span class="badge badge-warning" id="num-observed-events">0</span></p>
+
+
+        <h4 style="margin-top:0.75rem;">Orientation</h4>
+        <ul>
+            <li>X-axis (&beta;): <span id="Orientation_b">0</span><span>&deg;</span></li>
+            <li>Y-axis (&gamma;): <span id="Orientation_g">0</span><span>&deg;</span></li>
+            <li>Z-axis (&alpha;): <span id="Orientation_a">0</span><span>&deg;</span></li>
+        </ul>
+
+        <h4>Accelerometer</h4>
+        <ul>
+            <li>X-axis: <span id="Accelerometer_x">0</span><span> m/s<sup>2</sup></span></li>
+            <li>Y-axis: <span id="Accelerometer_y">0</span><span> m/s<sup>2</sup></span></li>
+            <li>Z-axis: <span id="Accelerometer_z">0</span><span> m/s<sup>2</sup></span></li>
+            <li>Data Interval: <span id="Accelerometer_i">0</span><span> ms</span></li>
+        </ul>
+
+        <h4>Accelerometer including gravity</h4>
+
+        <ul>
+            <li>X-axis: <span id="Accelerometer_gx">0</span><span> m/s<sup>2</sup></span></li>
+            <li>Y-axis: <span id="Accelerometer_gy">0</span><span> m/s<sup>2</sup></span></li>
+            <li>Z-axis: <span id="Accelerometer_gz">0</span><span> m/s<sup>2</sup></span></li>
+        </ul>
+
+        <h4>Gyroscope</h4>
+        <ul>
+            <li>X-axis: <span id="Gyroscope_x">0</span><span>&deg;/s</span></li>
+            <li>Y-axis: <span id="Gyroscope_y">0</span><span>&deg;/s</span></li>
+            <li>Z-axis: <span id="Gyroscope_z">0</span><span>&deg;/s</span></li>
+        </ul>
+
+        <div id='alphaPosition'></div>
+        <div id='betaPosition'></div>
+        <div id='gammaPosition'></div>
+
+        </div>
+        <div class="navbar navbar-default navbar-fixed-bottom">
+            <p class="navbar-text pull-left">
+                &nbsp;Follow Kenny
+                <a href="https://www.youtube.com/c/KennyShellnut" target="_blank"><i class="fa fa-youtube-play"></i></a>
+                <a href="https://www.instagram.com/kennyinanutshell" target="_blank"><i class="fa fa-instagram"></i></a>
+                <a href="https://twitter.com/KShellnut" target="_blank"><i class="fa fa-twitter"></i></a>
+            </p>
+            <p class="navbar-text pull-right">
+            Website suggestions? <a href="mailto:shellnut@gmail.com?subject=Smart Skateboard">Email Kenny&nbsp;</a>
+            </p>
+        </div>
+    </div>
+
+</body>
+
+<script>
+
+    var alphaArray = [];
+    var betaArray = [];
+    var gammaArray = [];
+
+    function handleOrientation(event) {
+
+      alphaArray.push(event.alpha);
+      betaArray.push(event.beta);
+      gammaArray.push(event.gamma);
+
+      updateFieldIfNotNull('Orientation_a', event.alpha);
+      updateFieldIfNotNull('Orientation_b', event.beta);
+      updateFieldIfNotNull('Orientation_g', event.gamma);
+      incrementEventCount();
+    }
+    
+    function incrementEventCount(){
+      let counterElement = document.getElementById("num-observed-events")
+      let eventCount = parseInt(counterElement.innerHTML)
+      counterElement.innerHTML = eventCount + 1;
+    }
+    
+    function updateFieldIfNotNull(fieldName, value, precision=10){
+      if (value != null)
+        document.getElementById(fieldName).innerHTML = value.toFixed(precision);
+    }
+    
+    function handleMotion(event) {
+      updateFieldIfNotNull('Accelerometer_gx', event.accelerationIncludingGravity.x);
+      updateFieldIfNotNull('Accelerometer_gy', event.accelerationIncludingGravity.y);
+      updateFieldIfNotNull('Accelerometer_gz', event.accelerationIncludingGravity.z);
+    
+      updateFieldIfNotNull('Accelerometer_x', event.acceleration.x);
+      updateFieldIfNotNull('Accelerometer_y', event.acceleration.y);
+      updateFieldIfNotNull('Accelerometer_z', event.acceleration.z);
+    
+      updateFieldIfNotNull('Accelerometer_i', event.interval, 2);
+    
+      updateFieldIfNotNull('Gyroscope_z', event.rotationRate.alpha);
+      updateFieldIfNotNull('Gyroscope_x', event.rotationRate.beta);
+      updateFieldIfNotNull('Gyroscope_y', event.rotationRate.gamma);
+      incrementEventCount();
+    }
+    
+    let is_running = false;
+    var doneRunning = false;
+    let demo_button = document.getElementById("start_demo");
+    demo_button.onclick = function(e) {
+      e.preventDefault();
+      
+      // Request permission for iOS 13+ devices
+      if (
+        DeviceMotionEvent &&
+        typeof DeviceMotionEvent.requestPermission === "function"
+      ) {
+        DeviceMotionEvent.requestPermission();
+      }
+      
+      if (is_running){
+        window.removeEventListener("devicemotion", handleMotion);
+        window.removeEventListener("deviceorientation", handleOrientation);
+        demo_button.innerHTML = "Start demo";
+        demo_button.classList.add('btn-success');
+        demo_button.classList.remove('btn-danger');
+        is_running = false;
+
+        if (doneRunning) {
+
+
+            // -------------------
+            // Graphs
+            // -------------------
+
+            // Alpha Position
+            var alphaTrace = {
+                x: Array.from({length: alphaArray.length}, (_, i) => i + 1),
+                y: alphaArray,
+                mode: 'lines+markers'
+            };
+
+            var alphaData = [alphaTrace];
+
+            var alphaLayout = {
+                title:'Alpha Position',
+                yaxis: {
+                    title: 'degrees',
+                    fixedrange: true
+                },
+                xaxis: {
+                    fixedrange: true
+                }
+            };
+
+            Plotly.newPlot('alphaPosition', alphaData, alphaLayout);
+
+
+            // Beta Position
+            var betaTrace = {
+                x: Array.from({length: betaArray.length}, (_, i) => i + 1),
+                y: betaArray,
+                mode: 'lines+markers'
+            };
+
+            var betaData = [betaTrace];
+
+            var betaLayout = {
+                title:'Beta Position',
+                yaxis: {
+                    title: 'degrees',
+                    fixedrange: true
+                },
+                xaxis: {
+                    fixedrange: true
+                }
+            };
+
+            Plotly.newPlot('betaPosition', betaData, betaLayout);
+
+            // Gamma Position
+            var gammaTrace = {
+                x: Array.from({length: gammaArray.length}, (_, i) => i + 1),
+                y: gammaArray,
+                mode: 'lines+markers'
+            };
+
+            var gammaData = [gammaTrace];
+
+            var gammaLayout = {
+                title:'Gamma Position',
+                yaxis: {
+                    title: 'degrees',
+                    fixedrange: true
+                },
+                xaxis: {
+                    fixedrange: true
+                }
+            };
+
+            Plotly.newPlot('gammaPosition', gammaData, gammaLayout);
+
+        }
+
+
+      }else{
+        window.addEventListener("devicemotion", handleMotion);
+        window.addEventListener("deviceorientation", handleOrientation);
+        document.getElementById("start_demo").innerHTML = "Stop demo";
+        demo_button.classList.remove('btn-success');
+        demo_button.classList.add('btn-danger');
+        is_running = true;
+        doneRunning = true;
+      }
+    };
+    
+</script>
+
+<script>
+    // Code goes here
+    var app = angular.module('myApp', []);
+
+    // Governing app controller
+    app.controller('myCtrl', ['$scope', function($scope) {
+      // Assign the data to the view
+      $scope.test = 'Test!';
+    }])
+</script>
+
+
+</html>
