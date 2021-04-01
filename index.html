@@ -11,10 +11,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-    <!-- Leaflet CSS -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A==" crossorigin=""/>
-    <!-- Make sure you put this AFTER Leaflet's CSS -->
-    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js" integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA==" crossorigin=""></script>
 
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -103,8 +99,8 @@
     }
     
     function incrementEventCount(){
-      let counterElement = document.getElementById("num-observed-events")
-      let eventCount = parseInt(counterElement.innerHTML)
+      var counterElement = document.getElementById("num-observed-events")
+      var eventCount = parseInt(counterElement.innerHTML)
       counterElement.innerHTML = eventCount + 1;
     }
     
@@ -130,10 +126,15 @@
       incrementEventCount();
     }
     
-    let is_running = false;
+    var is_running = false;
     var doneRunning = false;
-    let demo_button = document.getElementById("start_demo");
+    var demo_button = document.getElementById("start_demo");
+
+    // Button clicked function 
     demo_button.onclick = function(e) {
+
+      console.log("button clicked!!");
+
       e.preventDefault();
       
       // Request permission for iOS 13+ devices
@@ -144,7 +145,10 @@
         DeviceMotionEvent.requestPermission();
       }
       
-      if (is_running){
+      if (is_running) {
+
+        console.log(is_running);
+
         window.removeEventListener("devicemotion", handleMotion);
         window.removeEventListener("deviceorientation", handleOrientation);
         demo_button.innerHTML = "Start demo";
@@ -153,7 +157,6 @@
         is_running = false;
 
         if (doneRunning) {
-
 
             // -------------------
             // Graphs
@@ -172,7 +175,8 @@
                 title:'Alpha Position',
                 yaxis: {
                     title: 'degrees',
-                    fixedrange: true
+                    fixedrange: true,
+                    range: [0, 360]
                 },
                 xaxis: {
                     fixedrange: true
@@ -195,7 +199,8 @@
                 title:'Beta Position',
                 yaxis: {
                     title: 'degrees',
-                    fixedrange: true
+                    fixedrange: true,
+                    range: [-180, 180]
                 },
                 xaxis: {
                     fixedrange: true
@@ -217,7 +222,8 @@
                 title:'Gamma Position',
                 yaxis: {
                     title: 'degrees',
-                    fixedrange: true
+                    fixedrange: true,
+                    range: [-180, 180]
                 },
                 xaxis: {
                     fixedrange: true
@@ -226,10 +232,34 @@
 
             Plotly.newPlot('gammaPosition', gammaData, gammaLayout);
 
+            console.log('alpha array', alphaArray);
+            console.log('beta array', betaArray);
+            console.log('gamma array', gammaArray);
+
+
+            var exportObj = {
+                alphaArray: alphaArray,
+                betaArray: betaArray,
+                gammaArray: gammaArray
+            };
+            var exportName = 'data_' + new Date().getTime(); 
+            var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(exportObj));
+            var downloadAnchorNode = document.createElement('a');
+            downloadAnchorNode.setAttribute("href",     dataStr);
+            downloadAnchorNode.setAttribute("download", exportName + ".json");
+            document.body.appendChild(downloadAnchorNode); // required for firefox
+            downloadAnchorNode.click();
+            downloadAnchorNode.remove();
+
+            // reset
+            alphaArray = [];
+            betaArray = [];
+            gammaArray = [];
+
         }
 
-
-      }else{
+      }
+      else {
         window.addEventListener("devicemotion", handleMotion);
         window.addEventListener("deviceorientation", handleOrientation);
         document.getElementById("start_demo").innerHTML = "Stop demo";
