@@ -63,6 +63,13 @@
         <div id='alphaPosition'></div>
         <div id='betaPosition'></div>
         <div id='gammaPosition'></div>
+        <div id='accelXPosition'></div>
+        <div id='accelYPosition'></div>
+        <div id='accelZPosition'></div>
+        <!-- <div id='accelIPosition'></div>
+        <div id='accelGXPosition'></div>
+        <div id='accelGYPosition'></div>
+        <div id='accelGZPosition'></div> -->
 
         </div>
         <div class="navbar navbar-default navbar-fixed-bottom">
@@ -108,8 +115,27 @@
       if (value != null)
         document.getElementById(fieldName).innerHTML = value.toFixed(precision);
     }
+
+    var accelX = [];
+    var accelY = [];
+    var accelZ = [];
+    // var accelI = [];
+
+    // var accelGX = [];
+    // var accelGY = [];
+    // var accelGZ = [];
     
     function handleMotion(event) {
+
+      accelX.push(event.acceleration.x);
+      accelY.push(event.acceleration.y);
+      accelZ.push(event.acceleration.z);
+    //   accelI.push(event.interval);
+
+    //   accelGX.push(event.accelerationIncludingGravity.x);
+    //   accelGY.push(event.accelerationIncludingGravity.y);
+    //   accelGZ.push(event.accelerationIncludingGravity.z);
+
       updateFieldIfNotNull('Accelerometer_gx', event.accelerationIncludingGravity.x);
       updateFieldIfNotNull('Accelerometer_gy', event.accelerationIncludingGravity.y);
       updateFieldIfNotNull('Accelerometer_gz', event.accelerationIncludingGravity.z);
@@ -232,15 +258,190 @@
 
             Plotly.newPlot('gammaPosition', gammaData, gammaLayout);
 
+            // accelX Position
+            var accelXTrace = {
+                x: Array.from({length: accelX.length}, (_, i) => i + 1),
+                y: accelX,
+                mode: 'lines+markers'
+            };
+
+            var accelXData = [accelXTrace];
+
+            var accelXLayout = {
+                title:'accelX Position',
+                yaxis: {
+                    title: 'm/s^2',
+                    fixedrange: true,
+                    // range: [-180, 180]
+                },
+                xaxis: {
+                    fixedrange: true
+                }
+            };
+
+            Plotly.newPlot('accelXPosition', accelXData, accelXLayout);
+
+            // accelY Position
+            var accelYTrace = {
+                x: Array.from({length: accelY.length}, (_, i) => i + 1),
+                y: accelY,
+                mode: 'lines+markers'
+            };
+
+            var accelYData = [accelYTrace];
+
+            var accelYLayout = {
+                title:'accelY Position',
+                yaxis: {
+                    title: 'm/s^2',
+                    fixedrange: true,
+                    // range: [-180, 180]
+                },
+                xaxis: {
+                    fixedrange: true
+                }
+            };
+
+            Plotly.newPlot('accelYPosition', accelYData, accelYLayout);
+
+            // accelZ Position
+            var accelZTrace = {
+                x: Array.from({length: accelZ.length}, (_, i) => i + 1),
+                y: accelZ,
+                mode: 'lines+markers'
+            };
+
+            var accelZData = [accelZTrace];
+
+            var accelZLayout = {
+                title:'accelZ Position',
+                yaxis: {
+                    title: 'm/s^2',
+                    fixedrange: true,
+                    // range: [-180, 180]
+                },
+                xaxis: {
+                    fixedrange: true
+                }
+            };
+
+            Plotly.newPlot('accelZPosition', accelZData, accelZLayout);
+
+            // // accelI Position
+            // var accelITrace = {
+            //     x: Array.from({length: accelI.length}, (_, i) => i + 1),
+            //     y: accelI,
+            //     mode: 'lines+markers'
+            // };
+
+            // var accelIData = [accelITrace];
+
+            // var accelILayout = {
+            //     title:'accelI Position',
+            //     yaxis: {
+            //         title: 'm/s^2',
+            //         fixedrange: true,
+            //         // range: [-180, 180]
+            //     },
+            //     xaxis: {
+            //         fixedrange: true
+            //     }
+            // };
+
+            // Plotly.newPlot('accelIPosition', accelIData, accelILayout);
+
+            // // accelGX Position
+            // var accelGXTrace = {
+            //     x: Array.from({length: accelGX.length}, (_, i) => i + 1),
+            //     y: accelGX,
+            //     mode: 'lines+markers'
+            // };
+
+            // var accelGXData = [accelGXTrace];
+
+            // var accelGXLayout = {
+            //     title:'accelGX Position',
+            //     yaxis: {
+            //         title: 'm/s^2',
+            //         fixedrange: true,
+            //         // range: [-180, 180]
+            //     },
+            //     xaxis: {
+            //         fixedrange: true
+            //     }
+            // };
+
+            // Plotly.newPlot('accelGXPosition', accelGXData, accelGXLayout);
+
+            // // accelGY Position
+            // var accelGYTrace = {
+            //     x: Array.from({length: accelGY.length}, (_, i) => i + 1),
+            //     y: accelGY,
+            //     mode: 'lines+markers'
+            // };
+
+            // var accelGYData = [accelGYTrace];
+
+            // var accelGYLayout = {
+            //     title:'accelGY Position',
+            //     yaxis: {
+            //         title: 'm/s^2',
+            //         fixedrange: true,
+            //         // range: [-180, 180]
+            //     },
+            //     xaxis: {
+            //         fixedrange: true
+            //     }
+            // };
+
+            // Plotly.newPlot('accelGYPosition', accelGYData, accelGYLayout);
+
+            // // accelGZ Position
+            // var accelGZTrace = {
+            //     x: Array.from({length: accelGZ.length}, (_, i) => i + 1),
+            //     y: accelGZ,
+            //     mode: 'lines+markers'
+            // };
+
+            // var accelGZData = [accelGZTrace];
+
+            // var accelGZLayout = {
+            //     title:'accelGZ Position',
+            //     yaxis: {
+            //         title: 'm/s^2',
+            //         fixedrange: true,
+            //         // range: [-180, 180]
+            //     },
+            //     xaxis: {
+            //         fixedrange: true
+            //     }
+            // };
+
+            // Plotly.newPlot('accelGZPosition', accelGZData, accelGZLayout);
+
             console.log('alpha array', alphaArray);
             console.log('beta array', betaArray);
             console.log('gamma array', gammaArray);
+            console.log('accelX', accelX);
+            console.log('accelY', accelY);
+            console.log('accelZ', accelZ);
+            // console.log('accelI', accelI);
+            // console.log('accelGX', accelGX);
+            // console.log('accelGY', accelGY);
+            // console.log('accelGZ', accelGZ);
 
 
             var exportObj = {
                 alphaArray: alphaArray,
                 betaArray: betaArray,
-                gammaArray: gammaArray
+                gammaArray: gammaArray,
+                accelX: accelX,
+                accelY: accelY,
+                accelZ: accelZ,
+                // accelI: accelI,
+                // accelGX: accelGX,
+                // accelGY: accelGY,
+                // accelGZ: accelGZ,
             };
             var exportName = 'data_' + new Date().getTime(); 
             var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(exportObj));
@@ -255,6 +456,9 @@
             alphaArray = [];
             betaArray = [];
             gammaArray = [];
+            accelX = [];
+            accelY = [];
+            accelZ = [];
 
         }
 
